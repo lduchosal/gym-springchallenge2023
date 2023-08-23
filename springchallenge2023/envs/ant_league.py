@@ -293,10 +293,23 @@ class ComputeEggCrystalRatio(ObservationWrapper):
 
     def __init__(self, env):
         super().__init__(env)
-        self.observation_space = spaces.Box(
-            low=np.zeros((31, 10), dtype=float), 
-            high=np.full((31, 10), 300, dtype=float), 
-            dtype=float)
+        self.observation_space = spaces.Dict({
+            'map': spaces.Box(
+                low=np.zeros((31, 10), dtype=float), 
+                high=np.full((31, 10), 300, dtype=float), 
+                dtype=float),
+            'ratio_crystal': spaces.Box(
+                low=0, 
+                high=1, 
+                shape=(1,), 
+                dtype=float),
+            'ratio_oppants': spaces.Box(
+                low=0, 
+                high=1, 
+                shape=(1,), 
+                dtype=float)
+        })
+
 
     def observation(self, obs):
 
@@ -305,24 +318,42 @@ class ComputeEggCrystalRatio(ObservationWrapper):
         sum_myants = np.sum(obs[:, 6])
         sum_oppants = np.sum(obs[:, 7])
 
-        epsilon = 1e-10
-        ratio = 1 / ((sum_crystal / (sum_egg + sum_myants + sum_oppants + epsilon)) + epsilon)
-        obs_ratio = np.hstack((obs, np.full((obs.shape[0], 1), ratio)))
 
-        return obs_ratio
+        ratio_crystal_to_myants = 1 / (sum_crystal / sum_myants)
+        # ratio_eggs_to_myants = 1 / (sum_egg / sum_myants)
+        ratio_oppants_to_myants = 1 / (sum_oppants / sum_myants)
+
+
+        return {
+            'map': obs, 
+            'ratio_crystal': ratio_crystal_to_myants, 
+            'ratio_oppants': ratio_oppants_to_myants
+            }
 
 
 
 class Normalize(ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
-        self.observation_space = spaces.Box(
-            low=np.zeros((31, 10), dtype=float), 
-            high=np.full((31, 10), 1, dtype=float), 
-            dtype=float)
+        self.observation_space = spaces.Dict({
+            'map': spaces.Box(
+                low=np.zeros((31, 10), dtype=float), 
+                high=np.full((31, 10), 1, dtype=float), 
+                dtype=float),
+            'ratio_crystal': spaces.Box(
+                low=0, 
+                high=1, 
+                shape=(1,), 
+                dtype=float),
+            'ratio_oppants': spaces.Box(
+                low=0, 
+                high=1, 
+                shape=(1,), 
+                dtype=float)
+        })
 
     def observation(self, obs):
-        cols_to_normalize = obs[:, 4:8]
+        cols_to_normalize = obs['map'][:, 4:8]
 
         # Calculate min and max for these columns
         min_values = np.min(cols_to_normalize, axis=0)
@@ -333,5 +364,6 @@ class Normalize(ObservationWrapper):
         normalized_cols = (cols_to_normalize - min_values) / (max_values - min_values + epsilon)
 
         # Replace original columns with normalized columns
-        obs[:, 4:8] = normalized_cols
+        obs['map'][:, 4:8] = normalized_cols
+        return obs
 
