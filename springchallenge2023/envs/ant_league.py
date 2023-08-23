@@ -1,5 +1,5 @@
 from posixpath import expanduser
-from gymnasium import Env, ObservationWrapper, error, spaces, utils
+from gymnasium import ActionWrapper, Env, ObservationWrapper, spaces
 
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
@@ -95,8 +95,7 @@ class AntLeagueEnv(Env):
 
     def step(self, action):
 
-        beacons = self._action_to_beacons(action)
-        self._action.put(beacons)
+        self._action.put(action)
 
         logging.debug(f"Waiting for obs")
         observation = self._obs.get()
@@ -120,18 +119,6 @@ class AntLeagueEnv(Env):
             pygame.display.quit()
             pygame.quit()
 
-    def _action_to_beacons(self, action):
-
-        beacons = []
-        if len(action) == 0:
-            beacons.append("WAIT")
-
-        for i in range(len(action)):
-            if action[i] > 0:
-                beacons.append("BEACON {} {}".format(i, action[i]))
-
-        return ";".join(beacons)
-        
 
     # Define the function that runs the command
     def _run_antserver(self):
@@ -366,4 +353,20 @@ class Normalize(ObservationWrapper):
         # Replace original columns with normalized columns
         obs['map'][:, 4:8] = normalized_cols
         return obs
+
+class BeaconAction(ActionWrapper):
+
+    def action(self, action):
+        beacons = []
+        if len(action) == 0:
+            beacons.append("WAIT")
+
+        for i in range(len(action)):
+            if action[i] > 0:
+                beacons.append("BEACON {} {}".format(i, action[i]))
+
+        return ";".join(beacons)
+
+    def reverse_action(self, action):
+        return action
 

@@ -3,8 +3,9 @@ import numpy as np
 import sys
 sys.path.append('../')
 
-from springchallenge2023.envs.ant_league import EncodeCellType, ComputeEggCrystalRatio, Normalize
+from springchallenge2023.envs.ant_league import EncodeCellType, ComputeEggCrystalRatio, Normalize, BeaconAction
 from gymnasium import envs
+from gymnasium.wrappers import FlattenObservation
 import logging
 import threading
 
@@ -18,6 +19,8 @@ env = gym.make("springchallenge2023/AntLeague-v0")
 env = EncodeCellType(env)
 env = ComputeEggCrystalRatio(env)
 env = Normalize(env)
+env = FlattenObservation(env)
+env = BeaconAction(env)
 
 np.set_printoptions(precision=1, suppress=True)
 
@@ -25,14 +28,14 @@ np.set_printoptions(precision=1, suppress=True)
 logging.info("starting")
 
 obs, info = env.reset(seed=10)
+logging.info(obs.shape)
 logging.info(obs)
 
-action = np.array(
-    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 ],
-    dtype=int
-    )
+action = np.random.randint(0, 100, (31,))
+
 done = False
 while not done:
+    action = np.random.randint(0, 100, (31,))
     (obs, reward, terminated, truncated, info) = env.step(action)
     done = terminated or truncated
     logging.debug(obs)
