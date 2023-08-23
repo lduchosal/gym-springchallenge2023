@@ -9,7 +9,7 @@ from gymnasium.wrappers import FlattenObservation
 import logging
 import threading
 
-logging.basicConfig(level=logging.INFO, format='%(threadName)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(threadName)s - %(message)s')
 threading.current_thread().name = f'main'
 
 logging.debug(envs.registry.keys())
@@ -27,24 +27,30 @@ np.set_printoptions(precision=1, suppress=True)
 #env = AntLeagueEnv()
 logging.info("starting")
 
-obs, info = env.reset(seed=10)
-logging.info(obs.shape)
-logging.info(obs)
+while True:
 
-action = np.random.randint(0, 100, (31,))
+    obs, info = env.reset(seed=10)
+    logging.info(obs.shape)
+    logging.info(obs)
 
-done = False
-while not done:
     action = np.random.randint(0, 100, (31,))
-    (obs, reward, terminated, truncated, info) = env.step(action)
-    done = terminated or truncated
-    logging.debug(obs)
-    logging.info(f'reward : {reward}')
-    logging.debug(f'done : {done}')
 
-logging.info(obs)
-logging.info("terminated")
-env.close()
+    done = False
+    while not done:
+        action = np.random.randint(0, 100, (31,))
+        (obs, reward, terminated, truncated, info) = env.step(action)
+        done = terminated or truncated
+        logging.debug(obs)
+        logging.info(f'reward : {reward}')
+        logging.debug(f'done : {done}')
+
+    logging.info(obs)
+    logging.info("terminated")
+    env.close()
+
+    print("Press Enter to start next game...")
+    input()
+
 
 #env = gym.make("springchallenge2023/AntLeague-v0", render_mode=None)
 # env.reset()

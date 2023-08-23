@@ -25,6 +25,7 @@ class AntLeagueEnv(Env):
     _reward = queue.Queue()
     _terminated = queue.Queue()
     _seed = None
+    _player = None
 
     def __init__(self, render_mode=None):
         # Observations are dictionaries with the agent's and the target's location.
@@ -53,24 +54,26 @@ class AntLeagueEnv(Env):
         self.window = None
         self.clock = None
 
-    def reset(self, seed=None, options=None):
-        # We need the following line to seed self.np_random
-        super().reset(seed=seed)
-        self._seed = seed
-        HOST, PORT = "localhost", 6666
-
         # Start player agent
+        HOST, PORT = "localhost", 6666
         player = ThreadedLeagueServer((HOST, PORT), TcpPlayerHandler)
         player.obs = self._obs
         player.info = self._info
         player.action = self._action
         player.reward = self._reward
         player.terminated = self._terminated
+        player.__enter__()
+        
+        self._player = player
+
+    def reset(self, seed=None, options=None):
+        # We need the following line to seed self.np_random
+        super().reset(seed=seed)
+        self._seed = seed
 
         # Start player agent    
-        player.__enter__()
         player_thread = threading.Thread(
-            target=player.serve_forever,
+            target=self._player.serve_forever,
             name='player'
         )
         player_thread.daemon = True
@@ -83,6 +86,8 @@ class AntLeagueEnv(Env):
             )
         referee.daemon = True
         referee.start()
+
+        self._terminated.queue.clear()
 
         if self.render_mode == "human":
             self._render_frame()
