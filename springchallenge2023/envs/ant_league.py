@@ -246,7 +246,7 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
                     logging.debug(f"end of game")
                     return
                 
-                logging.debug(f"line: {line}")
+                # logging.debug(f"line: {line}")
                 (resource, myant, oppant) = [int(sd) for sd in sdata]
 
                 celltype = int(obs[i][0])
@@ -262,10 +262,10 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
 
             info = {}
 
-            logging.debug("waiting for action")
+            # logging.debug("waiting for action")
             action = self.server.action.get()
             reward = -1
-            logging.debug(f"got action {action}")
+            # logging.debug(f"got action {action}")
 
             # Likewise, self.wfile is a file-like object used to write back
             # to the client
@@ -366,9 +366,9 @@ class Normalize(ObservationWrapper):
         epsilon = 1e-10
         normalized_cols = (cols_to_normalize - min_values) / (max_values - min_values + epsilon)
 
-        logging.debug(f"before obs {obs}")
+        # logging.debug(f"before obs {obs}")
         obs['map'][:, 4:10] = normalized_cols
-        logging.debug(f"after obs {obs}")
+        # logging.debug(f"after obs {obs}")
 
         return obs
 
@@ -384,7 +384,7 @@ class BeaconAction(ActionWrapper):
                 beacons.append("BEACON {} {}".format(i, action[i]))
 
         act= ";".join(beacons)
-        logging.info(f'act : {act}')
+        logging.debug(f'act : {act}')
 
         return act
 
