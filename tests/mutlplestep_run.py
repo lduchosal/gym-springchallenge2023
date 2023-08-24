@@ -16,12 +16,12 @@ logging.debug(envs.registry.keys())
 logging.debug(gym.__version__)
 
 env = gym.make("springchallenge2023/AntLeague-v0") # obs (31, 5)  int,   action str
-env = BeaconAction(env)                            # obs (31, 5)  int,   action (31,)
-env = MultipleStepWrapper(env)                     # obs (31, 7)  int,   action (31,)
+env = BeaconAction(env)                            # obs (31, 5)  int,   action (31,) float
+env = MultipleStepWrapper(env)                     # obs (31, 7)  int,   action (1,) float
 env = EncodeCellType(env)                          # obs (31, 11) int,   action (31,)
-env = ComputeEggCrystalRatio(env)                  # obs (31, 13) float, action (31,)
-env = Normalize(env)                               # obs (31, 13) float, action (31,)
-env = FlattenObservation(env)                      # obs (250, )  float, action (31,)
+env = ComputeEggCrystalRatio(env)                  # { map = obs (31, 13) float, ratio = float }, action (31,)
+env = Normalize(env)                               # { map = obs (31, 13) float, ratio = float }, action (31,)
+env = FlattenObservation(env)                      # obs (405, ) float, action (31,)
 
 np.set_printoptions(precision=1, suppress=True)
 

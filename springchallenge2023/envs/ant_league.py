@@ -340,8 +340,8 @@ class Normalize(ObservationWrapper):
         super().__init__(env)
         self.observation_space = spaces.Dict({
             'map': spaces.Box(
-                low=np.zeros((31, 10), dtype=float), 
-                high=np.full((31, 10), 1, dtype=float), 
+                low=np.zeros((31, 11), dtype=float), 
+                high=np.full((31, 11), 1, dtype=float), 
                 dtype=float),
             'ratio_crystal': spaces.Box(
                 low=0, 
@@ -356,7 +356,7 @@ class Normalize(ObservationWrapper):
         })
 
     def observation(self, obs):
-        cols_to_normalize = obs['map'][:, 4:8]
+        cols_to_normalize = obs['map'][:, 4:10]
 
         # Calculate min and max for these columns
         min_values = np.min(cols_to_normalize, axis=0)
@@ -366,8 +366,10 @@ class Normalize(ObservationWrapper):
         epsilon = 1e-10
         normalized_cols = (cols_to_normalize - min_values) / (max_values - min_values + epsilon)
 
-        # Replace original columns with normalized columns
-        obs['map'][:, 4:8] = normalized_cols
+        logging.debug(f"before obs {obs}")
+        obs['map'][:, 4:10] = normalized_cols
+        logging.debug(f"after obs {obs}")
+
         return obs
 
 class BeaconAction(ActionWrapper):
@@ -481,6 +483,6 @@ class MultipleStepWrapper(Wrapper):
         terminated = False
         truncated = False
 
-        logging.info(f'obs : {obs}')
+        logging.debug(f'obs : {obs}')
 
         return obs, reward, terminated, truncated, info
