@@ -1,5 +1,7 @@
 from posixpath import expanduser
-from gymnasium import ActionWrapper, Env, ObservationWrapper, spaces
+from typing import Optional, Tuple
+from gymnasium import ActionWrapper, Wrapper, ObservationWrapper
+from gymnasium import Env, spaces
 
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
@@ -37,9 +39,9 @@ class AntLeagueEnv(Env):
 
         # actions is an array of beacon per cell
         self.action_space = spaces.Box(
-            low=np.zeros((31, 1), dtype=int), 
-            high=np.full((31, 1), 300, dtype=int), 
-            dtype=int)
+            low=np.zeros((1,), dtype=float), 
+            high=np.ones((1,), dtype=float), 
+            dtype=float)
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
@@ -70,6 +72,7 @@ class AntLeagueEnv(Env):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
         self._seed = seed
+        logging.debug(f"seed: {seed}")
 
         # Start player agent    
         player_thread = threading.Thread(
@@ -104,11 +107,16 @@ class AntLeagueEnv(Env):
 
         logging.debug(f"Waiting for obs")
         observation = self._obs.get()
+        logging.debug(f"observation: {observation}")
+
         logging.debug(f"Waiting for info")
         info = self._info.get()
+        logging.debug(f"info: {info}")
+
         terminated = not self._terminated.empty()
         logging.debug(f"Waiting for reward")
         reward = self._reward.get()
+        logging.debug(f"reward: {reward}")
         truncated = False
 
         if self.render_mode == "human":
@@ -123,6 +131,9 @@ class AntLeagueEnv(Env):
         if self.window is not None:
             pygame.display.quit()
             pygame.quit()
+
+        self._player.shutdown()
+        self._player.__exit__()
 
 
     # Define the function that runs the command
@@ -267,8 +278,8 @@ class EncodeCellType(ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.observation_space = spaces.Box(
-            low=np.zeros((31, 9), dtype=int), 
-            high=np.full((31, 9), 300, dtype=int), 
+            low=np.zeros((31, 11), dtype=int), 
+            high=np.full((31, 11), 300, dtype=int), 
             dtype=float)
 
     def observation(self, obs):
@@ -287,8 +298,8 @@ class ComputeEggCrystalRatio(ObservationWrapper):
         super().__init__(env)
         self.observation_space = spaces.Dict({
             'map': spaces.Box(
-                low=np.zeros((31, 10), dtype=float), 
-                high=np.full((31, 10), 300, dtype=float), 
+                low=np.zeros((31, 13), dtype=float), 
+                high=np.full((31, 13), 300, dtype=float), 
                 dtype=float),
             'ratio_crystal': spaces.Box(
                 low=0, 
@@ -370,8 +381,106 @@ class BeaconAction(ActionWrapper):
             if action[i] > 0:
                 beacons.append("BEACON {} {}".format(i, action[i]))
 
-        return ";".join(beacons)
+        act= ";".join(beacons)
+        logging.info(f'act : {act}')
+
+        return act
 
     def reverse_action(self, action):
         return action
 
+
+class LineAction(ActionWrapper):
+
+    def action(self, action):
+        line = "LINE 9 {} 10".format(action[0], action[1])
+        return line
+
+    def reverse_action(self, action):
+        return action
+
+
+class MultipleStepWrapper(Wrapper):
+
+
+    def __init__(self, env):
+
+        super().__init__(env)
+
+        self.observation_space = spaces.Box(
+            low=np.zeros((31, 7), dtype=int), 
+            high=np.full((31, 7), 300, dtype=int), 
+            dtype=int)
+
+        self.action_space = list(range(300))
+
+    def reset(
+        self, seed: Optional[int] = None, options: Optional[dict] = None
+    ):
+        """Resets the environment.
+
+        Args:
+            seed: the seed to reset the environment with
+            options: the options to reset the environment with
+
+        Returns:
+            (observation, info)
+        """
+
+        obs, info = self.env.reset(seed=seed)
+
+        self.stepcounter = 0
+        self.lastobs = obs
+        self.lastinfo = info
+        self.lastreward = -1
+
+        self.beacons = np.zeros((obs.shape[0], 1), dtype=int)
+        currentstep = self.one_hot_encode(self.stepcounter)
+        obs = np.hstack((obs, self.beacons))
+        obs = np.hstack((obs, currentstep))
+
+        return obs, info
+
+
+    def one_hot_encode(self, num):
+        num = num % 31
+        encoded = np.zeros((31,1))
+        encoded[num] = 1
+        return encoded
+
+
+    def step(self, action):
+
+        if self.stepcounter >= 31:
+
+            act = self.beacons.squeeze().astype(int)
+            obs, reward, terminated, truncated, info = self.env.step(act)
+            self.lastobs = obs
+            self.lastinfo = info
+            self.lastreward = reward
+            self.stepcounter = 0
+
+            # self.beacons = np.zeros((obs.shape[0], 1))
+            currentstep = self.one_hot_encode(self.stepcounter)
+            obs = np.hstack((obs, self.beacons))
+            obs = np.hstack((obs, currentstep))
+
+            return obs, reward, terminated, truncated, info
+
+        self.beacons[self.stepcounter] = action
+        obs = self.lastobs
+
+        self.stepcounter = self.stepcounter + 1 
+        currentstep = self.one_hot_encode(self.stepcounter)
+        obs = np.hstack((obs, self.beacons))
+        obs = np.hstack((obs, currentstep))
+
+
+        reward = self.lastreward
+        info = self.lastinfo
+        terminated = False
+        truncated = False
+
+        logging.info(f'obs : {obs}')
+
+        return obs, reward, terminated, truncated, info
