@@ -7,8 +7,8 @@ class Normalize(ObservationWrapper):
         super().__init__(env)
         self.observation_space = spaces.Dict({
             'map': spaces.Box(
-                low=np.zeros((31, 11), dtype=float),
-                high=np.full((31, 11), 1, dtype=float),
+                low=np.zeros((15, 11), dtype=float),
+                high=np.full((15, 11), 1, dtype=float),
                 dtype=float),
             'ratio_crystal': spaces.Box(
                 low=0,

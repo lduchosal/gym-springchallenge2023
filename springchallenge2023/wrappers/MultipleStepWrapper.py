@@ -14,11 +14,11 @@ class MultipleStepWrapper(Wrapper):
         super().__init__(env)
 
         self.observation_space = spaces.Box(
-            low=np.zeros((31, 7), dtype=int),
-            high=np.full((31, 7), 300, dtype=int),
+            low=np.zeros((15, 7), dtype=int),
+            high=np.full((15, 7), 10, dtype=int),
             dtype=int)
 
-        self.action_space = list(range(300))
+        self.action_space = spaces.Discrete(10)
 
     def reset(
         self, seed: Optional[int] = None, options: Optional[dict] = None
@@ -38,7 +38,6 @@ class MultipleStepWrapper(Wrapper):
         self.stepcounter = 0
         self.lastobs = obs
         self.lastinfo = info
-        self.lastreward = -1
 
         self.beacons = np.zeros((obs.shape[0], 1), dtype=int)
         currentstep = self.one_hot_encode(self.stepcounter)
@@ -49,21 +48,20 @@ class MultipleStepWrapper(Wrapper):
 
 
     def one_hot_encode(self, num):
-        num = num % 31
-        encoded = np.zeros((31,1))
+        num = num % 15
+        encoded = np.zeros((15,1))
         encoded[num] = 1
         return encoded
 
 
     def step(self, action):
 
-        if self.stepcounter >= 31:
+        if self.stepcounter >= 15:
 
             act = self.beacons.squeeze().astype(int)
             obs, reward, terminated, truncated, info = self.env.step(act)
             self.lastobs = obs
             self.lastinfo = info
-            self.lastreward = reward
             self.stepcounter = 0
 
             # self.beacons = np.zeros((obs.shape[0], 1))
@@ -82,7 +80,7 @@ class MultipleStepWrapper(Wrapper):
         obs = np.hstack((obs, currentstep))
 
 
-        reward = self.lastreward
+        reward = -0.1
         info = self.lastinfo
         terminated = False
         truncated = False

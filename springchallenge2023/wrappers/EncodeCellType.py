@@ -8,8 +8,8 @@ class EncodeCellType(ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.observation_space = spaces.Box(
-            low=np.zeros((31, 11), dtype=int),
-            high=np.full((31, 11), 300, dtype=int),
+            low=np.zeros((15, 11), dtype=int),
+            high=np.full((15, 11), 100, dtype=int),
             dtype=float)
 
     def observation(self, obs):

@@ -19,13 +19,13 @@ threading.current_thread().name = f'main'
 logging.debug(envs.registry.keys())
 logging.debug(gym.__version__)
 
-env = gym.make("springchallenge2023/AntLeague-v0") # obs (31, 5)  int,   action str
-env = BeaconAction(env)                            # obs (31, 5)  int,   action (31,) float
-env = MultipleStepWrapper(env)                     # obs (31, 7)  int,   action (1,) float
-env = EncodeCellType(env)                          # obs (31, 11) int,   action (31,)
-env = ComputeEggCrystalRatio(env)                  # { map = obs (31, 13) float, ratio = float }, action (31,)
-env = Normalize(env)                               # { map = obs (31, 13) float, ratio = float }, action (31,)
-env = FlattenObservation(env)                      # obs (405, ) float, action (31,)
+env = gym.make("springchallenge2023/AntLeague-v0") # obs (15, 5)  int,   action str
+env = BeaconAction(env)                            # obs (15, 5)  int,   action (15,) float
+env = MultipleStepWrapper(env)                     # obs (15, 7)  int,   action (1,) float
+env = EncodeCellType(env)                          # obs (15, 11) int,   action (15,)
+env = ComputeEggCrystalRatio(env)                  # { map = obs (15, 13) float, ratio = float }, action (15,)
+env = Normalize(env)                               # { map = obs (15, 13) float, ratio = float }, action (15,)
+env = FlattenObservation(env)                      # obs (167, ) float, action (15,)
 
 np.set_printoptions(precision=1, suppress=True)
 
