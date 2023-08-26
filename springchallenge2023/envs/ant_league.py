@@ -27,14 +27,17 @@ class AntLeagueEnv(Env):
     _player = None
 
     def __init__(self, render_mode=None):
+
+        print("AntLeagueEnv __init__")
+
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
         self.observation_space = spaces.Box(
-            low=np.zeros((31, 5), dtype=int), 
-            high=np.full((31, 5), 300, dtype=int), 
+            low=np.zeros((15, 5), dtype=int), 
+            high=np.full((15, 5), 300, dtype=int), 
             dtype=int)
 
-        # actions is an array of beacon per cell
+        # actions is a string, user actionwrappers
         self.action_space = spaces.Box(
             low=np.zeros((1,), dtype=float), 
             high=np.ones((1,), dtype=float), 
@@ -174,15 +177,14 @@ class AntLeagueEnv(Env):
             score1 = int(match.group(2))
 
             if score0 < 0: # illegal move
-                reward = -1000
+                reward = -10000
             else:
-                reward = ((score0 - score1) / (score0 + score1)) * 100
+                reward = ((score0 - score1) / (score0 + score1)) * 1000
 
         self._reward.put(reward)
         self._terminated.put("terminated")
 
         process.wait()
-
 
 
 class ThreadedLeagueServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -229,22 +231,25 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
 
         reward = None
 
+        score = 0
         # game
         while True:
 
+            line = self.rfile.readline() # scores
+            sdata = line.split()
+            if len(sdata) == 0: # end of game
+                self.server.obs.put(obs)
+                self.server.info.put(info)
+                self.server.terminated.put("terminated")
+                logging.debug(f"end of game")
+                return
+
+            myscore, oppscore = [int(i) for i in sdata]
+
             for i in range(cells):
                 line = self.rfile.readline() # reource, myant, oppant
-
-                sdata = line.split()
-                if len(sdata) == 0: # end of game
-                    self.server.obs.put(obs)
-                    self.server.info.put(info)
-                    self.server.terminated.put("terminated")
-                    logging.debug(f"end of game")
-                    return
-                
                 # logging.debug(f"line: {line}")
-                (resource, myant, oppant) = [int(sd) for sd in sdata]
+                (resource, myant, oppant) = [int(sd) for sd in line.split()]
 
                 celltype = int(obs[i][0])
                 obs[i][celltype-1] = resource #  eggs or crystal
@@ -261,12 +266,11 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
 
             # logging.debug("waiting for action")
             action = self.server.action.get()
-            reward = -1
+            reward = myscore - score
+            score = myscore
             # logging.debug(f"got action {action}")
 
             # Likewise, self.wfile is a file-like object used to write back
             # to the client
             self.wfile.write(bytes("{}".format(action), "ascii"))
             self.wfile.write(bytes("\n", "ascii"))
-
-
