@@ -184,6 +184,11 @@ class AntLeagueEnv(Env):
         self._reward.put(reward)
         self._terminated.put("terminated")
 
+        # if reward > 0:
+        f = open("ant_league.txt", "a")
+        f.write(stdout)
+        f.close()
+
         process.wait()
 
 
