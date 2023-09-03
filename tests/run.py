@@ -14,24 +14,29 @@ from gymnasium.wrappers import FlattenObservation
 import logging
 import threading
 
-logging.basicConfig(level=logging.INFO, format='%(threadName)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(threadName)s - %(message)s')
 threading.current_thread().name = f'main'
 
 logging.debug(envs.registry.keys())
 logging.debug(gym.__version__)
 
-env = gym.make("springchallenge2023/AntLeague-v0")
 
-env = EncodeCellType(env)
-env = ComputeEggCrystalRatio(env)
-env = Normalize(env)
-env = FlattenObservation(env)
-env = BeaconAction(env)
+def make_env():
+
+    env = gym.make("springchallenge2023/AntLeague-v0")
+    env = EncodeCellType(env)
+    env = ComputeEggCrystalRatio(env)
+    env = Normalize(env)
+    env = FlattenObservation(env)
+    env = BeaconAction(env)
+    return env
 
 np.set_printoptions(precision=1, suppress=True)
 
 #env = AntLeagueEnv()
 logging.info("starting")
+
+env = make_env()
 
 while True:
 

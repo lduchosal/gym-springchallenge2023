@@ -11,7 +11,8 @@ class BeaconAction(ActionWrapper):
 
         for i in range(len(action)):
             if action[i] > 0:
-                beacons.append("BEACON {} {}".format(i, action[i]))
+                a = int(action[i] * 1000)
+                beacons.append("BEACON {} {}".format(i, a))
 
         if len(beacons) == 0:
             beacons.append("WAIT")

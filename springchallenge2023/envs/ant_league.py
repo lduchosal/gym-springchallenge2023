@@ -39,8 +39,8 @@ class AntLeagueEnv(Env):
 
         # actions is a string, user actionwrappers
         self.action_space = spaces.Box(
-            low=np.zeros((1,), dtype=float), 
-            high=np.ones((1,), dtype=float), 
+            low=np.zeros((15,), dtype=float), 
+            high=np.ones((15,), dtype=float), 
             dtype=float)
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -139,6 +139,7 @@ class AntLeagueEnv(Env):
     # Define the function that runs the command
     def _run_antserver(self):
 
+        logging.info("_run_antserver START")
         # Define the working directory and the command
         cwd = '~/Projects/SpringChallenge2023/'
         cmd = [
@@ -190,6 +191,9 @@ class AntLeagueEnv(Env):
         f.close()
 
         process.wait()
+        process.terminate()
+        logging.info("_run_antserver STOP")
+
 
 
 class ThreadedLeagueServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -202,11 +206,19 @@ class ThreadedLeagueServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 class TcpPlayerHandler(socketserver.StreamRequestHandler):
 
+    def finish(self) -> None:
+        logging.debug("TcpPlayerHandler finish")
+        return super().finish()
+    
     def setup(self):
+
         super().setup()  # Call the parent class's setup method
         # self.connection.settimeout(1.0)  # Set a timeout of 5 seconds
+        logging.debug("TcpPlayerHandler setup")
+
 
     def handle(self):
+        logging.debug("TcpPlayerHandler START")
         logging.debug("{} wrote:".format(self.client_address[0]))
 
         info = {}
@@ -247,6 +259,7 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
                 self.server.info.put(info)
                 self.server.terminated.put("terminated")
                 logging.debug(f"end of game")
+                logging.debug("TcpPlayerHandler STOP")
                 return
 
             myscore, oppscore = [int(i) for i in sdata]
@@ -279,3 +292,5 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
             # to the client
             self.wfile.write(bytes("{}".format(action), "ascii"))
             self.wfile.write(bytes("\n", "ascii"))
+
+        logging.debug("TcpPlayerHandler STOP")
