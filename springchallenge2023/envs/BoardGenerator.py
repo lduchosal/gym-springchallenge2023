@@ -55,7 +55,7 @@ class BoardGenerator:
 
         to_remove = set()
         while len(to_remove) < wanted_empty_cells:
-            rand_index = BoardGenerator.random_instance.randint(0, coord_list_size - 1)
+            rand_index = BoardGenerator.random_instance.nextInt(coord_list_size - 1)
             rand_coord = coord_list[rand_index]
             to_remove.update([rand_coord, rand_coord.get_opposite()])
         coord_list = [x for x in coord_list if x not in to_remove]
@@ -76,7 +76,7 @@ class BoardGenerator:
                 blob_center = next((c for c in coord_list if BoardGenerator.has_six_neighbours(c, coord_list)), None)
                 if blob_center:
                     neighbours = blob_center.neighbours()
-                    BoardGenerator.random_instance.shuffle(neighbours)
+                    BoardGenerator.shuffle(neighbours)
                     coord_list.remove(neighbours[0])
                     coord_list.remove(neighbours[0].get_opposite())
                     changed = True
@@ -203,11 +203,11 @@ class BoardGenerator:
 
     @staticmethod
     def get_small_eggs_amount():
-        return 10 + BoardGenerator.random_instance.randint(0, 9)
+        return 10 + BoardGenerator.random_instance.nextInt(9)
 
     @staticmethod
     def get_large_eggs_amount():
-        return 20 + BoardGenerator.random_instance.randint(0, 19)
+        return 20 + BoardGenerator.random_instance.nextInt(19)
 
     @staticmethod
     def get_small_food_amount():

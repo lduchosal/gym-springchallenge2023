@@ -56,7 +56,23 @@ class TestBoardGenerator(unittest.TestCase):
         self.assertEqual(-1, board.get_cell_by_index(6).index, "cell6 is NOCELL")
         self.assertEqual(-1, board.get_cell_by_index(7).index, "cell7 is NOCELL")
 
-    # Add more tests as needed
+
+
+    def test_neightbours(self):
+        jrandom = javarandom.Random(10)  # Instantiate your compatible Java random generator
+        players = [Player(0), Player(1)]  # Replace with actual Player instances
+
+        board = BoardGenerator.generate(jrandom, players)
+
+        self.assertEqual(CellType.FOOD, board.get_cell_by_index(0).type, "cell0 FOOD")
+        self.assertEqual(0, board.get_cell_by_index(0).index, "cell0 index")
+
+        self.assertEqual("1 -1 -1 2 -1 -1", board.get_neighbour_ids(board.get_cell_by_index(0).coord), "neights0")
+        self.assertEqual("3 -1 -1 0 -1 -1", board.get_neighbour_ids(board.get_cell_by_index(1).coord), "neights1")
+        self.assertEqual("0 -1 -1 4 -1 -1", board.get_neighbour_ids(board.get_cell_by_index(2).coord), "neights2")
+        self.assertEqual("-1 -1 -1 1 -1 -1", board.get_neighbour_ids(board.get_cell_by_index(3).coord), "neights3")
+        self.assertEqual("2 -1 -1 -1 -1 -1", board.get_neighbour_ids(board.get_cell_by_index(4).coord), "neights4")
+
 
 if __name__ == '__main__':
     unittest.main()

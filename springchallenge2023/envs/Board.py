@@ -2,7 +2,7 @@ import heapq
 from collections import OrderedDict, deque
 from functools import cmp_to_key
 
-from springchallenge2023.envs import CubeCoord
+from springchallenge2023.envs.CubeCoord import CubeCoord
 from springchallenge2023.envs.Cell import Cell
 from springchallenge2023.envs.CellType import CellType
 from springchallenge2023.envs.Player import Player
@@ -11,7 +11,7 @@ from springchallenge2023.envs.Player import Player
 class Board:
     players: [Player]
     ring_count: int
-    cells: [int]
+    cells: [Cell]
     coords: [CubeCoord]
 
     def __init__(self, mapv, ring_count: int, players: [Player]):
@@ -26,13 +26,13 @@ class Board:
     def get_neighbours_by_index(self, i):
         return [self.map[coord].index for coord in self.get_neighbours(self.coords[i])]
 
-    def get_neighbours(self, coord):
+    def get_neighbours(self, coord) -> [CubeCoord]:
         return [neighbor for neighbor in coord.neighbours() if neighbor in self.map]
 
-    def get_neighbour_cells(self, cell):
+    def get_neighbour_cells(self, cell) -> [Cell]:
         return [self.map.get(coord, Cell.NO_CELL) for coord in self.get_neighbours(cell.coord)]
 
-    def get_neighbour_ids(self, coord):
+    def get_neighbour_ids(self, coord) -> str:
         ordered_neighbor_ids = []
         for i in range(len(CubeCoord.directions)):
             ordered_neighbor_ids.append(
