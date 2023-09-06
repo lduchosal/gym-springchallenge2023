@@ -1,21 +1,17 @@
+import logging
+import queue
+import re
+import socketserver
+import subprocess
+import threading
 from posixpath import expanduser
-from gymnasium import Env, spaces
 
 import numpy as np
-
-import queue
-import subprocess
 import pygame
-
-import threading
-import socketserver
-import logging
-
-import re
+from gymnasium import Env, spaces
 
 
 class AntLeagueEnv(Env):
-
     metadata = {"render_modes": ["human"], "render_fps": 4}
 
     _obs = queue.Queue()
@@ -33,14 +29,14 @@ class AntLeagueEnv(Env):
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
         self.observation_space = spaces.Box(
-            low=np.zeros((15, 5), dtype=int), 
-            high=np.full((15, 5), 300, dtype=int), 
+            low=np.zeros((15, 5), dtype=int),
+            high=np.full((15, 5), 300, dtype=int),
             dtype=int)
 
         # actions is a string, user actionwrappers
         self.action_space = spaces.Box(
-            low=np.zeros((15,), dtype=float), 
-            high=np.ones((15,), dtype=float), 
+            low=np.zeros((15,), dtype=float),
+            high=np.ones((15,), dtype=float),
             dtype=float)
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -65,7 +61,7 @@ class AntLeagueEnv(Env):
         player.reward = self._reward
         player.terminated = self._terminated
         player.__enter__()
-        
+
         self._player = player
 
     def reset(self, seed=None, options=None):
@@ -86,7 +82,7 @@ class AntLeagueEnv(Env):
         referee = threading.Thread(
             target=self._run_antserver,
             name='referee'
-            )
+        )
         referee.daemon = True
         referee.start()
 
@@ -126,7 +122,7 @@ class AntLeagueEnv(Env):
 
     def render(self):
         return ""
-    
+
     def close(self):
         if self.window is not None:
             pygame.display.quit()
@@ -134,7 +130,6 @@ class AntLeagueEnv(Env):
 
         self._player.shutdown()
         self._player.__exit__()
-
 
     # Define the function that runs the command
     def _run_antserver(self):
@@ -150,7 +145,7 @@ class AntLeagueEnv(Env):
             'AntLeagueMain'
         ]
 
-        if self._seed != None:
+        if self._seed is not None:
             cmd.extend(str(self._seed))
 
         # Expand the user's home directory
@@ -177,7 +172,7 @@ class AntLeagueEnv(Env):
             score0 = int(match.group(1))
             score1 = int(match.group(2))
 
-            if score0 < 0: # illegal move
+            if score0 < 0:  # illegal move
                 reward = -10000
             else:
                 reward = ((score0 - score1) / (score0 + score1)) * 1000
@@ -195,7 +190,6 @@ class AntLeagueEnv(Env):
         logging.info("_run_antserver STOP")
 
 
-
 class ThreadedLeagueServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address = True
 
@@ -209,42 +203,41 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
     def finish(self) -> None:
         logging.debug("TcpPlayerHandler finish")
         return super().finish()
-    
+
     def setup(self):
 
         super().setup()  # Call the parent class's setup method
         # self.connection.settimeout(1.0)  # Set a timeout of 5 seconds
         logging.debug("TcpPlayerHandler setup")
 
-
     def handle(self):
         logging.debug("TcpPlayerHandler START")
         logging.debug("{} wrote:".format(self.client_address[0]))
 
         info = {}
-        line = self.rfile.readline() # cells
+        line = self.rfile.readline()  # cells
 
         cells = int(line)
-        obs = np.zeros((cells, 5), dtype=int) # celltype, eggs, crystal, myants, oppants
+        obs = np.zeros((cells, 5), dtype=int)  # celltype, eggs, crystal, myants, oppants
 
         for i in range(cells):
-            line = self.rfile.readline() # celltype, resource, neigh0 .. neigh5            
+            line = self.rfile.readline()  # celltype, resource, neigh0 .. neigh5
             celltype, resource, n0, n1, n2, n3, n4, n5 = [int(sd) for sd in line.split()]
-            obs[i][0] = celltype # 0 = none, 1 = egg, 2 = crystal, 3 = mybase, 4 = oppbase
-            obs[i][celltype-1] = resource
+            obs[i][0] = celltype  # 0 = none, 1 = egg, 2 = crystal, 3 = mybase, 4 = oppbase
+            obs[i][celltype - 1] = resource
 
-        line = self.rfile.readline() # bases
+        line = self.rfile.readline()  # bases
         bases = int(line)
 
-        line = self.rfile.readline() # mybase
+        line = self.rfile.readline()  # mybase
         mybases = [int(i) for i in line.split()]
         for i in range(bases):
-            obs[mybases[i]][0] = 3 # mybases
-        
-        line = self.rfile.readline() # oppbase
+            obs[mybases[i]][0] = 3  # mybases
+
+        line = self.rfile.readline()  # oppbase
         oppbases = [int(i) for i in line.split()]
         for i in range(bases):
-            obs[oppbases[i]][0] = 4 # oppbases
+            obs[oppbases[i]][0] = 4  # oppbases
 
         reward = None
 
@@ -252,9 +245,9 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
         # game
         while True:
 
-            line = self.rfile.readline() # scores
+            line = self.rfile.readline()  # scores
             sdata = line.split()
-            if len(sdata) == 0: # end of game
+            if len(sdata) == 0:  # end of game
                 self.server.obs.put(obs)
                 self.server.info.put(info)
                 self.server.terminated.put("terminated")
@@ -265,14 +258,14 @@ class TcpPlayerHandler(socketserver.StreamRequestHandler):
             myscore, oppscore = [int(i) for i in sdata]
 
             for i in range(cells):
-                line = self.rfile.readline() # reource, myant, oppant
+                line = self.rfile.readline()  # reource, myant, oppant
                 # logging.debug(f"line: {line}")
                 (resource, myant, oppant) = [int(sd) for sd in line.split()]
 
                 celltype = int(obs[i][0])
-                obs[i][celltype-1] = resource #  eggs or crystal
-                obs[i][3] = myant #  myants, 
-                obs[i][4] = oppant #  oppants
+                obs[i][celltype - 1] = resource  # eggs or crystal
+                obs[i][3] = myant  # myants,
+                obs[i][4] = oppant  # oppants
 
             self.server.obs.put(obs)
             self.server.info.put(info)

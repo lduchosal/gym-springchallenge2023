@@ -1,1 +1,2 @@
 from springchallenge2023.envs.ant_league import AntLeagueEnv
+from springchallenge2023.envs.py_league import PyLeagueEnv
