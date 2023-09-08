@@ -1,10 +1,10 @@
 
-from springchallenge2023.envs.Board import Board
-from springchallenge2023.envs.Cell import Cell
-from springchallenge2023.envs.Config import Config
-from springchallenge2023.envs.CubeCoord import CubeCoord
-from springchallenge2023.envs.CellType import CellType
-from springchallenge2023.envs.Player import Player
+from springchallenge2023.pyleague.game.Board import Board
+from springchallenge2023.pyleague.game.Cell import Cell
+from springchallenge2023.pyleague.game.Config import Config
+from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
+from springchallenge2023.pyleague.game.CellType import CellType
+from springchallenge2023.pyleague.game.Player import Player
 from javarandom import Random
 
 
@@ -33,10 +33,10 @@ class BoardGenerator:
         cells = {}
         next_cell_index = 0
         ring_count = BoardGenerator.random_instance.nextInt(Config.MAP_RING_COUNT_MAX - Config.MAP_RING_COUNT_MIN + 1 ) + Config.MAP_RING_COUNT_MIN
-        coord_list = []
+        coord_list = set()
 
         center = CubeCoord.CENTER
-        coord_list.append(center)
+        coord_list.add(center)
         cur = center.neighbor(0)
         vertical_limit = int((ring_count * Config.VERTICAL_CUTOFF) + 0.5)
 
@@ -45,7 +45,7 @@ class BoardGenerator:
                 for count in range(distance):
                     if -vertical_limit < cur.z < vertical_limit:
                         if cur not in coord_list:
-                            coord_list.extend([cur, cur.get_opposite()])
+                            coord_list.update([cur, cur.get_opposite()])
                     cur = cur.neighbor((orientation + 2) % 6)
             cur = cur.neighbor(0)
 
@@ -56,32 +56,33 @@ class BoardGenerator:
         to_remove = set()
         while len(to_remove) < wanted_empty_cells:
             rand_index = BoardGenerator.random_instance.nextInt(coord_list_size - 1)
-            rand_coord = coord_list[rand_index]
+            rand_coord = list(coord_list)[rand_index]
             to_remove.update([rand_coord, rand_coord.get_opposite()])
-        coord_list = [x for x in coord_list if x not in to_remove]
-
+        coord_list.difference_update(to_remove) # [x for index, x in enumerate(coord_list) if x not in to_remove]
         corridor_mode = BoardGenerator.random_instance.nextDouble() < 0.05
         if corridor_mode:
             to_remove.clear()
-            for coord in coord_list:
+            for index, coord in enumerate(coord_list):
                 if BoardGenerator.has_six_neighbours(coord, coord_list):
                     to_remove.add(coord)
-            coord_list = [x for x in coord_list if x not in to_remove]
+            # coord_list = [x for x in coord_list if x not in to_remove]
+            coord_list = coord_list.difference_update(to_remove)
 
         no_blob_mode = BoardGenerator.random_instance.nextDouble() < 0.70
         if no_blob_mode:
             changed = True
             while changed:
                 changed = False
-                blob_center = next((c for c in coord_list if BoardGenerator.has_six_neighbours(c, coord_list)), None)
+                cell_with_six_neights = (c for index, c in enumerate(coord_list) if BoardGenerator.has_six_neighbours(c, coord_list))
+                blob_center = next(cell_with_six_neights, None)
                 if blob_center:
                     neighbours = blob_center.neighbours()
                     BoardGenerator.shuffle(neighbours)
                     coord_list.remove(neighbours[0])
-                    coord_list.remove(neighbours[0].get_opposite())
+                    coord_list.discard(neighbours[0].get_opposite())
                     changed = True
 
-        for coord in coord_list:
+        for index, coord in enumerate(coord_list):
             cell = Cell(next_cell_index, coord)
             next_cell_index += 1
             cells[coord] = cell
@@ -91,11 +92,11 @@ class BoardGenerator:
     @staticmethod
     def random_percentage(minv: int, maxv: int, total: int):
         # int percentage = min + random.nextInt((max + 1) - min);
-        percentage = minv + BoardGenerator.random_instance.nextInt((maxv + 1 ) - minv)
+        percentage = minv + BoardGenerator.random_instance.nextInt((maxv + 1) - minv)
         return int((percentage * total) / 100)
 
     @staticmethod
-    def has_six_neighbours(coord: CubeCoord, coord_list: [CubeCoord]):
+    def has_six_neighbours(coord: CubeCoord, coord_list: {CubeCoord}):
         return len([c for c in coord.neighbours() if c in coord_list]) == 6
 
     @staticmethod

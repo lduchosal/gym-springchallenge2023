@@ -1,8 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
-from springchallenge2023.envs.Board import Board
-from springchallenge2023.envs.Cell import Cell
+from springchallenge2023.pyleague.game.Board import Board
+from springchallenge2023.pyleague.game.Cell import Cell
 
 class BoardPlotter:
 
@@ -25,7 +24,7 @@ class BoardPlotter:
         if cell.anthill is not None:
             bgcolor = "red" if cell.anthill.index == 1 else "blue"
             textcolor = 'white'
-            text = str(cell.richness)
+            text = str(cell.ants[cell.anthill.index])
 
         if cell.richness > 0:
             text = str(cell.richness)

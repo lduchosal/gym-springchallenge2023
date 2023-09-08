@@ -1,8 +1,8 @@
 import unittest
 import javarandom
-from springchallenge2023.envs.BoardGenerator import BoardGenerator
-from springchallenge2023.envs.CellType import CellType
-from springchallenge2023.envs.Player import Player
+from springchallenge2023.pyleague.game.BoardGenerator import BoardGenerator
+from springchallenge2023.pyleague.game.CellType import CellType
+from springchallenge2023.pyleague.game.Player import Player
 
 class TestBoardGenerator(unittest.TestCase):
 

@@ -2,10 +2,10 @@ import heapq
 from collections import OrderedDict, deque
 from functools import cmp_to_key
 
-from springchallenge2023.envs.CubeCoord import CubeCoord
-from springchallenge2023.envs.Cell import Cell
-from springchallenge2023.envs.CellType import CellType
-from springchallenge2023.envs.Player import Player
+from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
+from springchallenge2023.pyleague.game.Cell import Cell
+from springchallenge2023.pyleague.game.CellType import CellType
+from springchallenge2023.pyleague.game.Player import Player
 
 
 class Board:

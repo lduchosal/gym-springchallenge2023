@@ -18,6 +18,11 @@ def axial_to_pixel(q, r, size):
     y = size * (np.sqrt(3) / 2 * q  +  np.sqrt(3) * r)
     return x, y
 
+def axial_to_pixel_pointy(q, r, size):
+    x = size * (np.sqrt(3) * q  +  np.sqrt(3)/2 * r)
+    y = size * (3./2 * r)
+    return x, y
+
 fig, ax = plt.subplots()
 
 size = 1

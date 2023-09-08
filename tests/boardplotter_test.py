@@ -3,9 +3,9 @@ import unittest
 import javarandom
 from matplotlib import pyplot as plt
 
-from springchallenge2023.envs.BoardGenerator import BoardGenerator
-from springchallenge2023.envs.BoardPlotter import BoardPlotter
-from springchallenge2023.envs.Player import Player
+from springchallenge2023.pyleague.game.BoardGenerator import BoardGenerator
+from springchallenge2023.pyleague.game.BoardPlotter import BoardPlotter
+from springchallenge2023.pyleague.game.Player import Player
 
 
 class TestBoardPlotter(unittest.TestCase):
@@ -66,7 +66,7 @@ class TestBoardPlotter(unittest.TestCase):
 
 
     def test_plot_board_random(self):
-        jrandom = javarandom.Random(10)  # Instantiate your compatible Java random generator
+        jrandom = javarandom.Random(12)  # Instantiate your compatible Java random generator
         players = [Player(0), Player(1)]  # Replace with actual Player instances
         fig, ax = plt.subplots()
 

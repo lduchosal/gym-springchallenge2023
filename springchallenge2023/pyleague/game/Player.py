@@ -1,6 +1,6 @@
 from typing import List
 
-from springchallenge2023.envs.Action import Action
+from springchallenge2023.pyleague.game.Action import Action
 
 
 class Player:

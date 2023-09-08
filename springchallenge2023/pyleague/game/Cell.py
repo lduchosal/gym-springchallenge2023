@@ -1,8 +1,8 @@
 from typing import Optional
 
-from springchallenge2023.envs.CellType import CellType
-from springchallenge2023.envs.CubeCoord import CubeCoord
-from springchallenge2023.envs.Player import Player
+from springchallenge2023.pyleague.game.CellType import CellType
+from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
+from springchallenge2023.pyleague.game.Player import Player
 
 
 class Cell:

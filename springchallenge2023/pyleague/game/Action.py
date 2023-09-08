@@ -1,5 +1,5 @@
 # Assuming the enum values are defined elsewhere
-from springchallenge2023.envs.ActionType import ActionType
+from springchallenge2023.pyleague.game.ActionType import ActionType
 
 
 class Action:
