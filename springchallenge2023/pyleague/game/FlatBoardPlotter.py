@@ -3,7 +3,7 @@ import numpy as np
 from springchallenge2023.pyleague.game.Board import Board
 from springchallenge2023.pyleague.game.Cell import Cell
 
-class BoardPlotter:
+class FlatBoardPlotter:
 
     def draw_hexagon(self, ax, x: int, y: int, text: str, bgcolor: str = 'white', textcolor: str = 'grey'):
         angles = np.linspace(0, 2*np.pi, 7)

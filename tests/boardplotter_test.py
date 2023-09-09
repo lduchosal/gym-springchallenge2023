@@ -4,8 +4,9 @@ import javarandom
 from matplotlib import pyplot as plt
 
 from springchallenge2023.pyleague.game.BoardGenerator import BoardGenerator
-from springchallenge2023.pyleague.game.BoardPlotter import BoardPlotter
+from springchallenge2023.pyleague.game.FlatBoardPlotter import FlatBoardPlotter
 from springchallenge2023.pyleague.game.Player import Player
+from springchallenge2023.pyleague.game.PointyBoardPlotter import PointyBoardPlotter
 
 
 class TestBoardPlotter(unittest.TestCase):
@@ -33,7 +34,7 @@ class TestBoardPlotter(unittest.TestCase):
 
         fig, axs = plt.subplots(2, 1, figsize=(10, 18))
 
-        bplot = BoardPlotter()
+        bplot = FlatBoardPlotter()
         bplot.hexagon_grid(axs[0], neighbors_cube)
         bplot.hexagon_grid(axs[1], neighbors_cube2)
         plt.show()
@@ -43,7 +44,7 @@ class TestBoardPlotter(unittest.TestCase):
         jrandom = javarandom.Random(100)  # Instantiate your compatible Java random generator
         players = [Player(0), Player(1)]  # Replace with actual Player instances
 
-        bplot = BoardPlotter()
+        bplot = FlatBoardPlotter()
         board = BoardGenerator.generate(jrandom, players)
         neightscoords = [cell.coord for cell in board.cells]
         neights = [(coord.x, coord.y, coord.z) for coord in neightscoords]
@@ -56,7 +57,7 @@ class TestBoardPlotter(unittest.TestCase):
         jrandom = javarandom.Random(10)  # Instantiate your compatible Java random generator
         players = [Player(0), Player(1)]  # Replace with actual Player instances
 
-        bplot = BoardPlotter()
+        bplot = FlatBoardPlotter()
         board = BoardGenerator.generate(jrandom, players)
         neightscoords = [cell.coord for cell in board.cells]
         neights = [(coord.x, coord.y, coord.z) for coord in neightscoords]
@@ -66,15 +67,46 @@ class TestBoardPlotter(unittest.TestCase):
 
 
     def test_plot_board_random(self):
-        jrandom = javarandom.Random(12)  # Instantiate your compatible Java random generator
+        jrandom = javarandom.Random(1)  # Instantiate your compatible Java random generator
         players = [Player(0), Player(1)]  # Replace with actual Player instances
         fig, ax = plt.subplots()
 
 
         board = BoardGenerator.generate(jrandom, players)
-        bplot = BoardPlotter()
+        bplot = FlatBoardPlotter()
         bplot.plot_board(ax, board)
         plt.show()
+
+
+    def test_plot_pointy_board_random(self):
+        jrandom = javarandom.Random(12)  # Instantiate your compatible Java random generator
+        players = [Player(0), Player(1)]  # Replace with actual Player instances
+
+        board = BoardGenerator.generate(jrandom, players)
+        bplot = PointyBoardPlotter()
+        fig, ax = plt.subplots()
+        bplot.plot_board(ax, board)
+        plt.show()
+
+    def test_generate_board(self):
+        jrandom = javarandom.Random(12)  # Instantiate your compatible Java random generator
+        players = [Player(0), Player(1)]  # Replace with actual Player instances
+        board = BoardGenerator.generate(jrandom, players)
+
+    def test_generate_board_10(self):
+        jrandom = javarandom.Random(10)  # Instantiate your compatible Java random generator
+        players = [Player(0), Player(1)]  # Replace with actual Player instances
+        board = BoardGenerator.generate(jrandom, players)
+        bplot = PointyBoardPlotter()
+        fig, ax = plt.subplots()
+        bplot.plot_board(ax, board)
+        plt.show()
+
+
+    def test_generate_huge_board(self):
+        jrandom = javarandom.Random(12)  # Instantiate your compatible Java random generator
+        players = [Player(0), Player(1)]  # Replace with actual Player instances
+        board = BoardGenerator.generate(jrandom, players)
 
 
     # Add more tests as needed

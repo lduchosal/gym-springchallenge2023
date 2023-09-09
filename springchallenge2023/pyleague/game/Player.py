@@ -5,18 +5,13 @@ from springchallenge2023.pyleague.game.Action import Action
 
 class Player:
 
-    points: int
-    anthills: [int]
-    message: str
-    index: int
-
     def __init__(self, index: int):
-        self.points = 0
-        self.anthills = []
+        self.points: int = 0
+        self.anthills: [int] = []
         self.beacons = []
         self.lines = []
-        self.message = ""
-        self.index = index
+        self.message: str = ""
+        self.index: int = index
 
     def __str__(self):
         return f"Player {self.index}"

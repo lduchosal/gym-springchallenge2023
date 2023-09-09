@@ -66,7 +66,7 @@ class BoardGenerator:
                 if BoardGenerator.has_six_neighbours(coord, coord_list):
                     to_remove.add(coord)
             # coord_list = [x for x in coord_list if x not in to_remove]
-            coord_list = coord_list.difference_update(to_remove)
+            coord_list.difference_update(to_remove)
 
         no_blob_mode = BoardGenerator.random_instance.nextDouble() < 0.70
         if no_blob_mode:
@@ -82,7 +82,7 @@ class BoardGenerator:
                     coord_list.discard(neighbours[0].get_opposite())
                     changed = True
 
-        for index, coord in enumerate(coord_list):
+        for coord in sorted(coord_list, key=lambda c: c.index):
             cell = Cell(next_cell_index, coord)
             next_cell_index += 1
             cells[coord] = cell
@@ -97,7 +97,8 @@ class BoardGenerator:
 
     @staticmethod
     def has_six_neighbours(coord: CubeCoord, coord_list: {CubeCoord}):
-        return len([c for c in coord.neighbours() if c in coord_list]) == 6
+        has_six= len([c for c in coord.neighbours() if c in coord_list]) == 6
+        return has_six
 
     @staticmethod
     def add_resource_cells(board: Board, players):

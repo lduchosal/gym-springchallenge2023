@@ -1,6 +1,7 @@
 import heapq
 from collections import OrderedDict, deque
 from functools import cmp_to_key
+from typing import Dict
 
 from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
 from springchallenge2023.pyleague.game.Cell import Cell
@@ -9,18 +10,14 @@ from springchallenge2023.pyleague.game.Player import Player
 
 
 class Board:
-    players: [Player]
-    ring_count: int
-    cells: [Cell]
-    coords: [CubeCoord]
 
-    def __init__(self, mapv, ring_count: int, players: [Player]):
-        self.players = players
-        self.map = mapv
-        self.ring_count = ring_count
-        self.cells = sorted(mapv.values(), key=lambda cell: cell.index)
-        self.coords = [cell.coord for cell in self.cells]
-        self.distance_cache = [[0 for _ in range(len(self.map))] for _ in range(len(self.map))]
+    def __init__(self, mapv: Dict[int, CubeCoord], ring_count: int, players: [Player]):
+        self.players: [Player] = players
+        self.map: Dict[int, CubeCoord] = mapv
+        self.ring_count: int = ring_count
+        self.cells: [Cell] = sorted(mapv.values(), key=lambda cell: cell.index)
+        self.coords: [CubeCoord] = [cell.coord for cell in self.cells]
+        self.distance_cache: int = [[0 for _ in range(len(self.map))] for _ in range(len(self.map))]
         self.attack_cache = [OrderedDict() for _ in players]
 
     def get_neighbours_by_index(self, i):
@@ -240,3 +237,4 @@ class Board:
 
     def get_initial_food(self):
         return self.initial_food
+

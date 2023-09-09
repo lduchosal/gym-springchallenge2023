@@ -7,17 +7,15 @@ from springchallenge2023.pyleague.game.Player import Player
 
 class Cell:
     NO_CELL = None  # To be defined later
-    coord: CubeCoord
-    anthill: Optional[Player]
 
-    def __init__(self, index, coord):
-        self.index = index
-        self.richness = 0
-        self.ants = [0, 0]
-        self.beacons = [0, 0]
-        self.coord = coord
-        self.type = CellType.EMPTY
-        self.anthill = None
+    def __init__(self, index, coord: CubeCoord):
+        self.index: int = index
+        self.richness: int = 0
+        self.ants: [int] = [0, 0]
+        self.beacons: [int] = [0, 0]
+        self.coord: CubeCoord = coord
+        self.type: CellType = CellType.EMPTY
+        self.anthill: Optional[Player] = None
 
     def get_index(self):
         return self.index
