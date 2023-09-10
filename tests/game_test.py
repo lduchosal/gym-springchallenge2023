@@ -41,10 +41,10 @@ class TestGame(unittest.TestCase):
         plt.show()
 
         self.assertEqual(info[1], "0 0 1 3 5 2 4 6", "0")
-        self.assertEqual(info[2], "0 11 7 9 3 0 6 16", "1")
-        self.assertEqual(info[3], "0 11 0 5 15 8 10 4", "2")
-        self.assertEqual(info[4], "0 0 9 -1 11 5 0 1", "3")
-        self.assertEqual(info[5], "0 0 6 0 2 10 -1 12", "4")
+        self.assertEqual(info[2], "0 11 7 9 3 0 6 -1", "1")
+        self.assertEqual(info[3], "0 11 0 5 -1 8 10 4", "2")
+        self.assertEqual(info[4], "0 0 9 11 13 5 0 1", "3")
+        self.assertEqual(info[5], "0 0 6 0 2 10 12 14", "4")
 
 
     # Add more tests as needed

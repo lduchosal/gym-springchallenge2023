@@ -4,6 +4,7 @@ import javarandom
 from matplotlib import pyplot as plt
 
 from springchallenge2023.pyleague.game.BoardGenerator import BoardGenerator
+from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
 from springchallenge2023.pyleague.game.FlatBoardPlotter import FlatBoardPlotter
 from springchallenge2023.pyleague.game.Player import Player
 from springchallenge2023.pyleague.game.PointyBoardPlotter import PointyBoardPlotter
@@ -39,6 +40,17 @@ class TestBoardPlotter(unittest.TestCase):
         bplot.hexagon_grid(axs[1], neighbors_cube2)
         plt.show()
 
+    def test_plot_CubeCoord_orientation(self):
+        neighbors_cube = CubeCoord.directions
+        neighbors_cube2 = neighbors_cube[::-1]
+
+        fig, axs = plt.subplots(2, 1, figsize=(10, 18))
+
+        bplot = FlatBoardPlotter()
+        bplot.hexagon_grid(axs[0], neighbors_cube)
+        bplot.hexagon_grid(axs[1], neighbors_cube2)
+        plt.show()
+
 
     def test_print_board(self):
         jrandom = javarandom.Random(100)  # Instantiate your compatible Java random generator
@@ -51,6 +63,8 @@ class TestBoardPlotter(unittest.TestCase):
         fig, ax = plt.subplots()
         bplot.hexagon_grid(ax, neights)
         plt.show()
+
+
 
 
     def test_print_board_random(self):
