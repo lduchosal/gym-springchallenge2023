@@ -49,7 +49,7 @@ class GameSummaryManager:
         ]) + "\n\n"
 
     def add_not_enough_food_left(self, player):
-        self.lines.append(f"{player.get_nickname_token()} has harvested at least half the crystals. Game over!")
+        self.lines.append(f"{player.index} has harvested at least half the crystals. Game over!")
 
     def add_no_more_food(self):
         self.lines.append("All the crystals have been harvested. Game over!")

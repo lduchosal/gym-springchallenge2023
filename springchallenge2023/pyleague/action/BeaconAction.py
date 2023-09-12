@@ -1,4 +1,4 @@
-from springchallenge2023.pyleague.action import ActionType
+from springchallenge2023.pyleague.action.ActionType import ActionType
 
 
 class BeaconAction:

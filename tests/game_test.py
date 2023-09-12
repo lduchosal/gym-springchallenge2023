@@ -129,5 +129,28 @@ class TestGame(unittest.TestCase):
         plt.show()
 
 
+
+    def test_perform_game_update_wait(self):
+        Config.MAP_RING_COUNT_MAX = 10
+        Config.SCORES_IN_IO = True
+        game = Game(10)
+        player0, player1 = game.players
+
+        info = game.get_global_info_for(player0)
+        frame = game.get_current_frame_info_for(player0)
+
+        game.handle_player_commands(player0, "LINE 0 2 10")
+        game.handle_player_commands(player1, "LINE 0 2 10")
+
+        game.perform_game_update()
+
+        print(game.game_summary)
+
+        bplot = PointyBoardPlotter()
+        fig, ax = plt.subplots()
+        bplot.plot_board(ax, game.board)
+        plt.show()
+
+
 if __name__ == '__main__':
     unittest.main()

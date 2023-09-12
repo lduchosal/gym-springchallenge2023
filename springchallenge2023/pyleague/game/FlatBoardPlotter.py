@@ -3,10 +3,11 @@ import numpy as np
 from springchallenge2023.pyleague.game.Board import Board
 from springchallenge2023.pyleague.game.Cell import Cell
 
+
 class FlatBoardPlotter:
 
-    def draw_hexagon(self, ax, x: int, y: int, text: str, bgcolor: str = 'white', textcolor: str = 'grey'):
-        angles = np.linspace(0, 2*np.pi, 7)
+    def draw_hexagon(self, ax, x: float, y: float, text: str, bgcolor: str = 'white', textcolor: str = 'grey'):
+        angles = np.linspace(0, 2 * np.pi, 7)
         x_hexagon = x + np.cos(angles)
         y_hexagon = y + np.sin(angles)
         ax.plot(x_hexagon, y_hexagon, 'b-')
@@ -40,10 +41,10 @@ class FlatBoardPlotter:
 
     def axial_to_pixel(self, q: float, r: int, size: int = 1.1):
         x = size * (3. / 2) * q
-        y = size * (np.sqrt(3) / 2 * q  +  np.sqrt(3) * r)
+        y = size * (np.sqrt(3) / 2 * q + np.sqrt(3) * r)
         return x, y
 
-    def hexagon_grid(self, ax, neighbors_cube: [(int,int,int)]):
+    def hexagon_grid(self, ax, neighbors_cube: [(int, int, int)]):
 
         i = 0
         for x, y, z in neighbors_cube:
@@ -55,7 +56,6 @@ class FlatBoardPlotter:
         ax.axis('equal')
         return ax
 
-
     def plot_board(self, ax, board: Board):
 
         for cell in board.cells:
@@ -63,4 +63,3 @@ class FlatBoardPlotter:
 
         ax.axis('equal')
         return ax
-

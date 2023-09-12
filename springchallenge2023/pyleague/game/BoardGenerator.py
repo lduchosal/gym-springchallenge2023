@@ -1,4 +1,3 @@
-
 from springchallenge2023.pyleague.game.Board import Board
 from springchallenge2023.pyleague.game.Cell import Cell
 from springchallenge2023.pyleague.game.Config import Config
@@ -32,7 +31,8 @@ class BoardGenerator:
     def generate_potentially_unconnected_graph(players):
         cells = {}
         next_cell_index = 0
-        ring_count = BoardGenerator.random_instance.nextInt(Config.MAP_RING_COUNT_MAX - Config.MAP_RING_COUNT_MIN + 1 ) + Config.MAP_RING_COUNT_MIN
+        ring_count = BoardGenerator.random_instance.nextInt(
+            Config.MAP_RING_COUNT_MAX - Config.MAP_RING_COUNT_MIN + 1) + Config.MAP_RING_COUNT_MIN
         coord_list = set()
 
         center = CubeCoord.CENTER
@@ -58,7 +58,7 @@ class BoardGenerator:
             rand_index = BoardGenerator.random_instance.nextInt(coord_list_size - 1)
             rand_coord = list(coord_list)[rand_index]
             to_remove.update([rand_coord, rand_coord.get_opposite()])
-        coord_list.difference_update(to_remove) # [x for index, x in enumerate(coord_list) if x not in to_remove]
+        coord_list.difference_update(to_remove)  # [x for index, x in enumerate(coord_list) if x not in to_remove]
         corridor_mode = BoardGenerator.random_instance.nextDouble() < 0.05
         if corridor_mode:
             to_remove.clear()
@@ -73,7 +73,8 @@ class BoardGenerator:
             changed = True
             while changed:
                 changed = False
-                cell_with_six_neights = (c for index, c in enumerate(coord_list) if BoardGenerator.has_six_neighbours(c, coord_list))
+                cell_with_six_neights = (c for index, c in enumerate(coord_list) if
+                                         BoardGenerator.has_six_neighbours(c, coord_list))
                 blob_center = next(cell_with_six_neights, None)
                 if blob_center:
                     neighbours = blob_center.neighbours()
@@ -97,7 +98,7 @@ class BoardGenerator:
 
     @staticmethod
     def has_six_neighbours(coord: CubeCoord, coord_list: {CubeCoord}):
-        has_six= len([c for c in coord.neighbours() if c in coord_list]) == 6
+        has_six = len([c for c in coord.neighbours() if c in coord_list]) == 6
         return has_six
 
     @staticmethod
@@ -109,7 +110,8 @@ class BoardGenerator:
                 center_cell.set_food_amount(BoardGenerator.get_large_food_amount())
 
         # Place anthills
-        hills_per_player = 1 if Config.FORCE_SINGLE_HILL else (2 if BoardGenerator.random_instance.nextDouble() < 0.33 else 1)
+        hills_per_player = 1 if Config.FORCE_SINGLE_HILL else (
+            2 if BoardGenerator.random_instance.nextDouble() < 0.33 else 1)
 
         valid_coords = BoardGenerator.select_anthill_coords(board, hills_per_player)
 
@@ -127,12 +129,14 @@ class BoardGenerator:
 
         # Place food
         SURPLUS_MODE = True if Config.FORCE_SINGLE_HILL else BoardGenerator.random_instance.nextDouble() < 0.1  # 10% chance
-        HUNGRY_MODE = False if Config.FORCE_SINGLE_HILL else (not SURPLUS_MODE and BoardGenerator.random_instance.nextDouble() < 0.08)  # 8% chance
+        HUNGRY_MODE = False if Config.FORCE_SINGLE_HILL else (
+                not SURPLUS_MODE and BoardGenerator.random_instance.nextDouble() < 0.08)  # 8% chance
         FAMINE_MODE = False if Config.FORCE_SINGLE_HILL else (
-                    not SURPLUS_MODE and not HUNGRY_MODE and BoardGenerator.random_instance.nextDouble() < 0.04)  # 4% chance
+                not SURPLUS_MODE and not HUNGRY_MODE and BoardGenerator.random_instance.nextDouble() < 0.04)  # 4% chance
 
         if not FAMINE_MODE:
-            valid_food_coords = [coord for coord in board.coords if board.get_cell_by_coord(coord).get_anthill() is None]
+            valid_food_coords = [coord for coord in board.coords if
+                                 board.get_cell_by_coord(coord).get_anthill() is None]
             wanted_food_cells = BoardGenerator.random_percentage(Config.MIN_FOOD_CELLS_PERCENT,
                                                                  Config.MAX_FOOD_CELLS_PERCENT, len(valid_food_coords))
             wanted_food_cells = max(2, wanted_food_cells)
@@ -174,7 +178,8 @@ class BoardGenerator:
             ant_potential = 0
             if Config.ENABLE_EGGS:
                 valid_egg_coords = [coord for coord in board.coords if
-                                    board.get_cell_by_coord(coord).get_anthill() is None and board.get_cell_by_coord(coord).get_richness() == 0]
+                                    board.get_cell_by_coord(coord).get_anthill() is None and board.get_cell_by_coord(
+                                        coord).get_richness() == 0]
                 wanted_egg_cells = BoardGenerator.random_percentage(Config.MIN_EGG_CELLS_PERCENT,
                                                                     Config.MAX_EGG_CELLS_PERCENT, len(valid_egg_coords))
 

@@ -38,8 +38,7 @@ class Game:
         return [(self.board.get_cell_by_coord(coord), coord) for coord in self.board.coords]
 
     def get_global_info_for(self, player):
-        lines = []
-        lines.append(str(len(self.board.coords)))
+        lines = [str(len(self.board.coords))]
         for coord in self.board.coords:
             cell = self.board.map[coord]
             cell_type = 1 if cell.get_type() == CellType.EGG else 2 if cell.get_type() == CellType.FOOD else 0

@@ -24,15 +24,16 @@ class HexPlotter:
     def __init__(self):
         self.coord_converter = CoordConverter()
 
-    def draw_rhombus(self, ax: plt, center_x: int, center_y: float, width: float, height: float, bgcolor: str, text: str):
+    def draw_rhombus(self, ax: plt, center_x: int, center_y: float, width: float, height: float, bgcolor: str,
+                     text: str):
         x = np.array([center_x, center_x + width / 2, center_x, center_x - width / 2, center_x])
         y = np.array([center_y - height / 2, center_y, center_y + height / 2, center_y, center_y - height / 2])
         ax.plot(x, y, 'w-')
         ax.fill(x, y, bgcolor)
         ax.text(center_x, center_y, text, fontsize=10, ha='center', va='center', color='white')
 
-
-    def draw_hexagon(self, ax, x: int, y: int, size: float, text: str, bgcolor: str = 'white', textcolor: str = 'black'):
+    def draw_hexagon(self, ax, x: int, y: int, size: float, text: str, bgcolor: str = 'white',
+                     textcolor: str = 'black'):
 
         angles = np.linspace(np.pi / 6, 2 * np.pi + np.pi / 6, 7)
         x_hexagon = x + size * np.cos(angles)
@@ -76,19 +77,17 @@ class PointyBoardPlotter:
     def __init__(self):
         self.hexplotter = HexPlotter()
 
-
-    def hexagon_grid(self, ax, neighbors_cube: [(int,int,int)]):
+    def hexagon_grid(self, ax, neighbors_cube: [(int, int, int)]):
 
         i = 0
         for x, y, z in neighbors_cube:
             q, r = self.cube_to_axial(x, y, z)
             x, y = self.axial_to_pixel(q, r)
-            self.hexplotter.draw_hexagon(ax, x, y, f'{i}')
+            self.hexplotter.draw_hexagon(ax, x, y, 1.0, f'{i}')
             i += 1
 
         ax.axis('equal')
         return ax
-
 
     def plot_board(self, ax, board: Board):
 
@@ -108,4 +107,3 @@ class PointyBoardPlotter:
 
         ax.axis('equal')
         return ax
-

@@ -2,8 +2,8 @@ from springchallenge2023.pyleague.game.Game import Game
 from springchallenge2023.pyleague.view.CellData import CellData
 from springchallenge2023.pyleague.view.GlobalViewData import GlobalViewData
 
-class GameDataProvider:
 
+class GameDataProvider:
     game: Game
 
     def __init__(self, game, game_manager):
