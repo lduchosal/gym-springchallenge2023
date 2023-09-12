@@ -2,7 +2,7 @@ from math import atan2, pi
 
 
 class CubeCoord:
-    directions = [(1, -1, 0), (0, -1, 1), (-1, 0, 1), (-1, 1, 0), (0, 1, -1), (1, 0, -1)]
+    directions = [(1, 0, -1), (1, -1, 0), (0, -1, 1), (-1, 0, 1), (-1, 1, 0), (0, 1, -1)]
     CENTER = None  # Will be defined later after the class definition
     INDEX: int = 0
 
@@ -71,7 +71,6 @@ class CubeCoord:
         return \
             self.distance_from_center(), \
             self.y, self.z, self.x, -self.z
-
 
 
 # Define CENTER now that the class is complete
