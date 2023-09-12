@@ -29,9 +29,9 @@ class PointyBoardPlotter:
         if cell.anthill is not None:
             bgcolor = "red" if cell.anthill.index == 1 else "blue"
             textcolor = 'white'
-            ressources = str(cell.ants[cell.anthill.index])
+            resources = str(cell.ants[cell.anthill.index])
             richness = str(cell.richness)
-            text = f'{text}\n{ressources}\n{richness}'
+            text = f'{text}\n{resources}\n{richness}'
 
         if cell.richness > 0:
             richness = str(cell.richness)

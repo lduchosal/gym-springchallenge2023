@@ -121,6 +121,8 @@ class TestGame(unittest.TestCase):
 
         game.perform_game_update()
 
+        print(game.game_summary)
+
         bplot = PointyBoardPlotter()
         fig, ax = plt.subplots()
         bplot.plot_board(ax, game.board)

@@ -11,23 +11,23 @@ from springchallenge2023.pyleague.game.Player import Player
 
 class Board:
 
-    def __init__(self, mapv: Dict[int, Cell], ring_count: int, players: [Player]):
+    def __init__(self, map_: Dict[CubeCoord, Cell], ring_count: int, players: [Player]):
         self.players: [Player] = players
-        self.map: Dict[int, Cell] = mapv
+        self.map: Dict[CubeCoord, Cell] = map_
         self.ring_count: int = ring_count
-        self.cells: [Cell] = sorted(mapv.values(), key=lambda cell: cell.index)
+        self.cells: [Cell] = sorted(map_.values(), key=lambda cell: cell.index)
         self.coords: [CubeCoord] = [cell.coord for cell in self.cells]
         self.distance_cache: int = [[0 for _ in range(len(self.map))] for _ in range(len(self.map))]
         self.attack_cache = [OrderedDict() for _ in players]
 
-    def get_neighbours_by_index(self, i):
-        return [self.map[coord].index for coord in self.get_neighbours(self.coords[i])]
+    def get_neighbours_by_index(self, i) -> [int]:
+        return [self.map[coord].index for coord in self.get_neighbours_by_coord(self.coords[i])]
 
-    def get_neighbours(self, coord: CubeCoord) -> List[CubeCoord]:
+    def get_neighbours_by_coord(self, coord: CubeCoord) -> List[CubeCoord]:
         return [neighbor for neighbor in coord.neighbours() if neighbor in self.map]
 
-    def get_neighbour_cells(self, cell) -> [Cell]:
-        return [self.map.get(coord, Cell.NO_CELL) for coord in self.get_neighbours(cell.coord)]
+    def get_neighbours_by_cell(self, cell) -> List[Cell]:
+        return [self.map.get(coord, Cell.NO_CELL) for coord in self.get_neighbours_by_coord(cell.coord)]
 
     def get_neighbour_ids(self, coord) -> str:
         ordered_neighbor_ids = []
@@ -116,7 +116,7 @@ class Board:
 
     def get_best_path_bycell(self, start: Cell, end: Cell, player_idx: int, interrupted_by_fight: bool) -> [Cell]:
         # Assuming you have a method that converts from index to the best path
-        return self.get_best_path_byindex(start.get_index(), end.get_index(), player_idx, interrupted_by_fight)
+        return self.get_best_path_index(start.get_index(), end.get_index(), player_idx, interrupted_by_fight)
 
     attack_cache = []
     initial_food = 0
@@ -129,7 +129,7 @@ class Board:
 
         all_paths = []
         for anthill in anthills:
-            best_path = self.get_best_path_byindex(cell_idx, anthill, player_idx, False)
+            best_path = self.get_best_path_index(cell_idx, anthill, player_idx, False)
 
             if best_path:
                 all_paths.append(best_path)
@@ -146,7 +146,7 @@ class Board:
         for cache in self.attack_cache:
             cache.clear()
 
-    def get_best_path_byindex(self, start: int, end: int, player_idx: int, interrupted_by_fight: bool):
+    def get_best_path_index(self, start: int, end: int, player_idx: int, interrupted_by_fight: bool):
         max_path_values = [float('-inf')] * len(self.cells)
         prev = [-1] * len(self.cells)
         distance_from_start = [0] * len(self.cells)
@@ -174,9 +174,9 @@ class Board:
             _, current_idx = heapq.heappop(queue)
             visited[current_idx] = True
 
-            for neighbor in self.get_neighbours(self.coords[current_idx]):
+            for neighbor in self.get_neighbours_by_cell(self.get_cell_by_index(current_idx)):
                 neighbor_idx = neighbor.index
-                neighbor_ants = neighbor.get_ants_by_index(player_idx)
+                neighbor_ants = neighbor.get_ants_by_idx(player_idx)
 
                 if interrupted_by_fight:
                     my_force = self.get_attack_power(neighbor_idx, player_idx)
