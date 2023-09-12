@@ -1,5 +1,4 @@
 import unittest
-from math import atan2
 from typing import List
 
 from matplotlib import pyplot as plt

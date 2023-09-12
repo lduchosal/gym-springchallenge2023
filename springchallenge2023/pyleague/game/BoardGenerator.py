@@ -198,7 +198,7 @@ class BoardGenerator:
             ants_per_hill = max(10, 60 - ant_potential)
             for player in players:
                 for idx in player.anthills:
-                    board.get_cell_by_index(idx).place_ants(player, ants_per_hill)
+                    board.get_cell_by_index(idx).place_ants_by_player(player, ants_per_hill)
 
             # Set initial food
             board.initial_food = board.get_remaining_food()

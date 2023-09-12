@@ -1,6 +1,8 @@
 from typing import List
 
-from springchallenge2023.pyleague.game.Action import Action
+from springchallenge2023.pyleague.action.ActionType import ActionType
+from springchallenge2023.pyleague.action.BeaconAction import BeaconAction
+from springchallenge2023.pyleague.action.LineAction import LineAction
 
 
 class Player:
@@ -8,8 +10,8 @@ class Player:
     def __init__(self, index: int):
         self.points: int = 0
         self.anthills: [int] = []
-        self.beacons = []
-        self.lines = []
+        self.beacons: [BeaconAction] = []
+        self.lines: [LineAction] = []
         self.message: str = ""
         self.index: int = index
 
@@ -39,14 +41,14 @@ class Player:
         self.beacons.clear()
         self.lines.clear()
 
-    def add_action(self, action: Action):
-        action_type = action.get_type()
-        if action_type == "BEACON":
+    def add_action(self, action):
+        action_type = action.type
+        if action.type == ActionType.BEACON:
             self.beacons.append(action)
-        elif action_type == "LINE":
+        elif action_type == ActionType.LINE:
             self.lines.append(action)
-        elif action_type == "MESSAGE":
-            self.set_message(action.get_message())
+        elif action_type == ActionType.MESSAGE:
+            self.set_message(action.message)
 
     def add_anthill(self, index: int):
         self.anthills.append(index)
@@ -59,6 +61,3 @@ class Player:
 
     def get_points(self) -> int:
         return self.points
-
-    def get_index(self) -> int:
-        return self.index

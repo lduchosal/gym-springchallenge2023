@@ -1,8 +1,9 @@
 import numpy as np
 
-from springchallenge2023.pyleague.game.Board import Board
-from springchallenge2023.pyleague.game.Cell import Cell
-from springchallenge2023.pyleague.game.CubeCoord import CubeCoord
+from springchallenge2023.pyleague.game import Board
+from springchallenge2023.pyleague.game import Cell
+from springchallenge2023.pyleague.game import CellType
+from springchallenge2023.pyleague.game import CubeCoord
 
 
 class PointyBoardPlotter:
@@ -35,9 +36,8 @@ class PointyBoardPlotter:
         if cell.richness > 0:
             richness = str(cell.richness)
             text = f'{text}\n{richness}'
-
-            bgcolor = "yellow"
-            textcolor = 'black'
+            bgcolor = "yellow" if cell.type == CellType.FOOD else "green"
+            textcolor = 'black' if cell.type == CellType.FOOD else "white"
 
         self.draw_hexagon(ax, x, y, text, bgcolor, textcolor)
 

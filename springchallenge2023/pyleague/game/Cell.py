@@ -17,6 +17,9 @@ class Cell:
         self.type: CellType = CellType.EMPTY
         self.anthill: Optional[Player] = None
 
+    def __str__(self):
+        return f'[{self.index}] {self.type} {self.richness} ({self.coord.x}, {self.coord.y}, {self.coord.z})'
+
     def get_index(self):
         return self.index
 
@@ -46,34 +49,34 @@ class Cell:
     def set_anthill(self, anthill):
         self.anthill = anthill
 
-    def place_ants(self, player: Player, amount: int):
-        self.place_ants_by_idx(player.get_index(), amount)
+    def place_ants_by_player(self, player: Player, amount: int):
+        self.place_ants_by_idx(player.index, amount)
 
     def place_ants_by_idx(self, player_idx, amount):
         self.ants[player_idx] += amount
 
-    def remove_ants(self, player, amount):
-        self.remove_ants_by_idx(player.get_index(), amount)
+    def remove_ants_by_player(self, player: Player, amount: int):
+        self.remove_ants_by_idx(player.index, amount)
 
-    def get_ants(self, player):
-        return self.get_ants_by_idx(player.get_index())
-
-    def get_ants_by_idx(self, player_idx):
-        return self.ants[player_idx]
-
-    def set_beacon_power(self, player_idx, power):
-        self.beacons[player_idx] = power
-
-    def get_beacon_power(self, player_idx):
-        return self.beacons[player_idx]
-
-    def get_beacon_power_by_player(self, player):
-        return self.beacons[player.get_index()]
-
-    def remove_ants_by_idx(self, player_idx, amount):
+    def remove_ants_by_idx(self, player_idx: int, amount: int):
         self.ants[player_idx] -= min(amount, self.ants[player_idx])
 
-    def deplete(self, amount):
+    def get_ants_by_player(self, player: Player):
+        return self.get_ants_by_idx(player.index)
+
+    def get_ants_by_idx(self, player_idx: int) -> int:
+        return self.ants[player_idx]
+
+    def set_beacon_power(self, player_idx: int, power: int):
+        self.beacons[player_idx] = power
+
+    def get_beacon_power_by_idx(self, player_idx: int):
+        return self.beacons[player_idx]
+
+    def get_beacon_power_by_player(self, player: Player):
+        return self.get_beacon_power_by_idx(player.index)
+
+    def deplete(self, amount: int):
         self.richness -= min(amount, self.richness)
 
     def get_type(self):

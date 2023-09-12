@@ -73,5 +73,6 @@ class CubeCoord:
             self.y, self.z, self.x, -self.z
 
 
+
 # Define CENTER now that the class is complete
 CubeCoord.CENTER = CubeCoord(0, 0, 0)
