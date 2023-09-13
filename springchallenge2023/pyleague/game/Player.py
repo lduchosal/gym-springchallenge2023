@@ -14,6 +14,7 @@ class Player:
         self.lines: [LineAction] = []
         self.message: str = ""
         self.index: int = index
+        self.name: str = f'Player{index}'
 
     def __str__(self):
         return f"Player {self.index}"

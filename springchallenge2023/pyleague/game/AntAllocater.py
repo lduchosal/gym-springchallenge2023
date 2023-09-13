@@ -28,7 +28,9 @@ class AntAllocater:
         ant_sum = sum(cell.ants for cell in ant_cells)
         beacon_sum = sum(cell.beacons for cell in beacon_cells)
 
-        scaling_factor = ant_sum / beacon_sum
+        scaling_factor = float('inf')
+        if beacon_sum > 0:
+            scaling_factor = float(ant_sum) / beacon_sum
 
         for cell in beacon_cells:
             high_beacon_value = int(math.ceil(cell.beacons * scaling_factor))

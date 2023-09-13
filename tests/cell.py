@@ -17,13 +17,16 @@ def draw_rhombus(ax: plt, center_x: int, center_y: float, width: float, height: 
 
 def draw_cell(ax: plt, center_x: int, center_y: int, size: int):
     draw_pointy_hexagon(ax, center_x, center_y, size)
-    draw_rhombus(ax, center_x, size * -0.6, size * 1.2, size * 0.7)
-    draw_rhombus(ax, center_x, size * 0.6, size * 1.2, size * 0.7)
+    draw_rhombus(ax, center_x, center_y + size * -0.6, size * 1.2, size * 0.7)
+    draw_rhombus(ax, center_x, center_y + size * 0.6, size * 1.2, size * 0.7)
 
+plt.figure(figsize=(1024/100, 768/100), dpi=200)
 
-plt.figure()
-
-draw_cell(plt, 0, 0, 2)
+size = 5
+draw_cell(plt, 0, 0, size)
+draw_cell(plt, size*2, 0, size)
+draw_cell(plt, 0, size*2, size)
+draw_cell(plt, size*2, size*2, size)
 
 plt.axis('equal')
 plt.show()

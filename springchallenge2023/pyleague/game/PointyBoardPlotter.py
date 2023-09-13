@@ -49,6 +49,8 @@ class HexPlotter:
         text = str(cell.index)
         text = f'{cell.index}\n{coord.x},{coord.y},{coord.z}'
         text = f'{cell.index}'
+        if cell.beacons[0] > 0 or cell.beacons[1] > 0:
+            text = f'{text}\n[{cell.beacons[0]};{cell.beacons[1]}]'
 
         textcolor = 'grey'
         bgcolor = 'white'
@@ -59,17 +61,17 @@ class HexPlotter:
 
         if cell.richness > 0:
             richness = str(cell.richness)
-            text = f'{richness}'
+            text = f'{text}\n({richness})'
             bgcolor = "yellow" if cell.type == CellType.FOOD else "green"
             textcolor = 'black' if cell.type == CellType.FOOD else "white"
         size = 1.0
 
         self.draw_hexagon(ax, x, y, size, text, bgcolor, textcolor)
         if cell.ants[1] > 0:
-            self.draw_rhombus(ax, x, size * -0.6, size * 1.2, size * 0.7, 'red', str(cell.ants[1]))
+            self.draw_rhombus(ax, x, y + size * -0.6, size * 1.2, size * 0.7, 'red', str(cell.ants[1]))
 
         if cell.ants[0] > 0:
-            self.draw_rhombus(ax, x, size * 0.6, size * 1.2, size * 0.7, 'blue', str(cell.ants[0]))
+            self.draw_rhombus(ax, x, y + size * 0.6, size * 1.2, size * 0.7, 'blue', str(cell.ants[0]))
 
 
 class PointyBoardPlotter:

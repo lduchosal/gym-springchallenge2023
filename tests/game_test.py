@@ -1,4 +1,5 @@
 import unittest
+from typing import List
 
 from matplotlib import pyplot as plt
 
@@ -106,8 +107,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(frame[5], "0 0 0", "4")
 
 
-
-    def test_perform_game_update(self):
+    def test_perform_game_update_line2(self):
         Config.MAP_RING_COUNT_MAX = 10
         Config.SCORES_IN_IO = True
         game = Game(10)
@@ -117,7 +117,7 @@ class TestGame(unittest.TestCase):
         frame = game.get_current_frame_info_for(player0)
 
         game.handle_player_commands(player0, "LINE 0 2 10")
-        game.handle_player_commands(player1, "LINE 0 1 10")
+        game.handle_player_commands(player1, "LINE 0 2 10")
 
         game.perform_game_update()
 
@@ -127,7 +127,6 @@ class TestGame(unittest.TestCase):
         fig, ax = plt.subplots()
         bplot.plot_board(ax, game.board)
         plt.show()
-
 
 
     def test_perform_game_update_wait(self):
@@ -140,7 +139,7 @@ class TestGame(unittest.TestCase):
         frame = game.get_current_frame_info_for(player0)
 
         game.handle_player_commands(player0, "LINE 0 2 10")
-        game.handle_player_commands(player1, "LINE 0 2 10")
+        game.handle_player_commands(player1, "WAIT")
 
         game.perform_game_update()
 
