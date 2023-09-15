@@ -18,7 +18,7 @@ def play(player0_plays: List[str], player1_plays: List[str]):
 
     info = game.get_global_info_for(player0)
     frame = game.get_current_frame_info_for(player0)
-    plot(game.board)
+    #plot(game.board)
 
     while not game.game_end:
         cmd0 = player0_plays[game.game_turn] if game.game_turn < len(player0_plays) else "WAIT"
@@ -27,7 +27,7 @@ def play(player0_plays: List[str], player1_plays: List[str]):
         game.handle_player_commands(player1, cmd1)
         game.perform_game_update()
 
-        plot(game.board)
+        #plot(game.board)
 
     print(game.game_summary)
 

@@ -1,6 +1,6 @@
-numpy~=1.25.2
+numpy~=1.26.0rc1
 gymnasium~=0.29.0
-setuptools~=65.5.1
+setuptools~=68.2
 java-random~=1.0
 pygame~=2.5.1
-matplotlib~=3.7.2
+matplotlib~=3.8
