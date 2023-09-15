@@ -47,6 +47,8 @@ class PyLeagueEnv(gym.Env):
 
         # Initialize state
         self.state = None
+        self.prev_reward0 = 0
+        self.prev_reward1 = 0
 
         Config.MAP_RING_COUNT_MAX = 4
         Config.SCORES_IN_IO = True
@@ -61,9 +63,6 @@ class PyLeagueEnv(gym.Env):
         player0 = self.game.players[0]
         player1 = self.game.players[1]
 
-        info = self.game.get_global_info_for(player0)
-        frame = self.game.get_current_frame_info_for(player0)
-
         # Update state based on action
         cmd0 = ';'.join([f'BEACON {i} {int(value)}' for i, value in enumerate(action) if int(value) > 0])
         cmd1 = "LINE 5 9 1;LINE 5 6 1"
@@ -73,16 +72,27 @@ class PyLeagueEnv(gym.Env):
 
         self.game.perform_game_update()
 
+        info = self.game.get_global_info_for(player0)
+        frame = self.game.get_current_frame_info_for(player0)
+        summary = self.game.game_summary
+
+        extra = {'info': info, 'frame': frame, 'summary': summary }
+
         terminated = self.game.game_end
         truncated = False
 
-        # reward = player1.get_points()
-        reward = player0.get_points()
+        reward0 = player0.get_points()
+        reward1 = player1.get_points()
+
+        reward = (reward0 - self.prev_reward0) - (reward1 - self.prev_reward1)
+
+        self.prev_reward0 = reward0
+        self.prev_reward1 = reward1
 
         cells = [(cell.richness, cell.ants[0], cell.ants[1]) for cell in self.game.board.cells]
         self.state = np.array(cells, dtype=int)
 
-        return self.state, reward, terminated, truncated, {'info': info, 'frame': frame}
+        return self.state, reward, terminated, truncated, extra
 
     def reset(self):
         # Reset state
@@ -91,7 +101,9 @@ class PyLeagueEnv(gym.Env):
         self.state = np.array(cells, dtype=int)
         info = self.game.get_global_info_for(self.game.players[0])
         frame = self.game.get_current_frame_info_for(self.game.players[0])
-        return self.state, {'info': info, 'frame': frame}
+        summary = self.game.game_summary
+        extra = {'info': info, 'frame': frame, 'summary': summary }
+        return self.state,extra
 
     def render(self, mode='human'):
         # Implement rendering

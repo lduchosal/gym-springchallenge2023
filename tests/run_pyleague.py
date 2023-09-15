@@ -27,27 +27,27 @@ logging.info("starting")
 
 env = make_env()
 
-while True:
 
-    state, info = env.reset()
-    logging.info(state.shape)
-    logging.info(state)
+state, info = env.reset()
+logging.info(state.shape)
+logging.info(state)
 
-    done = False
-    while not done:
-        env.render()  # Set the render_mode here
-        action = np.random.randint(0, 300, (15,))
-        (state, reward, terminated, truncated, info) = env.step(action)
-        done = terminated or truncated
-        logging.debug(state)
-        logging.info(f'reward : {reward}')
-        logging.debug(f'done : {done}')
+done = False
+while not done:
+    env.render()  # Set the render_mode here
+    action = np.random.randint(0, 300, (15,))
+    (state, reward, terminated, truncated, info) = env.step(action)
+    done = terminated or truncated
+    logging.debug(state)
+    logging.info(f'reward : {reward}')
+    logging.debug(f'done : {done}')
+    logging.debug(f"frame : {info['frame']}")
+    logging.debug(f"info : {info['info']}")
+    logging.debug(f"summary : {info['summary']}")
 
-    logging.info(state)
-    logging.info("terminated")
+logging.info(state)
+logging.info("terminated")
 
-    print("Press Enter to start next game...")
-    input()
 
 env.close()
 
