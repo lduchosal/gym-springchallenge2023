@@ -1,6 +1,11 @@
 import gymnasium as gym
 import numpy as np
 import sys
+
+from gymnasium.wrappers import FlattenObservation
+
+from springchallenge2023.wrappers import ComputeEggCrystalRatio, EncodeCellType, Normalize
+
 sys.path.append('../')
 
 from gymnasium import envs
@@ -17,6 +22,10 @@ logging.debug(gym.__version__)
 
 def make_env():
     env = gym.make("springchallenge2023/PyLeague-v0", render_mode='human')
+    env = EncodeCellType(env)
+    env = ComputeEggCrystalRatio(env)
+    env = Normalize(env)
+    env = FlattenObservation(env)
     return env
 
 np.set_printoptions(precision=1, suppress=True)
