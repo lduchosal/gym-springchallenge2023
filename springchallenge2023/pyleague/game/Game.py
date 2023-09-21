@@ -22,7 +22,7 @@ from springchallenge2023.pyleague.game.Player import Player
 class Game:
     random: Random = None
 
-    def __init__(self, seed: int):
+    def __init__(self, seed: None):
         self.game_summary: str = ''
         self.players: List[Player] = [Player(0), Player(1)]
         self.random: Random = javarandom.Random(seed)

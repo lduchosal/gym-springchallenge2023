@@ -1,8 +1,10 @@
 import logging
+from typing import Tuple
 
 import gymnasium as gym
 import numpy as np
-from gymnasium import spaces
+from gymnasium import spaces, Space
+from gymnasium.spaces import Discrete
 from matplotlib import pyplot as plt
 
 from springchallenge2023.pyleague.game.CellType import CellType
@@ -28,12 +30,12 @@ class PyLeagueEnv(gym.Env):
             high=np.full((15, 5), 300, dtype=int),
             dtype=int)
 
-        # actions is a [10, 10,100], user actionwrappers
-        self.action_space = spaces.Box(
-            low=np.zeros((15,), dtype=float),
-            high=np.ones((15,), dtype=float),
-            dtype=float)
-
+        # 15 cells, 1 beacon, 0 no beacon
+        self.action_space =  spaces.Box(
+            low=np.zeros((15, ), dtype=bool),
+            high=np.ones((15, ), dtype=bool),
+            dtype=bool
+        )
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
@@ -50,7 +52,7 @@ class PyLeagueEnv(gym.Env):
         # Initialize state
         self.state = None
         self.prev_reward0 = 0
-        self.prev_reward1 = 0
+        # self.prev_reward1 = 0
 
         Config.MAP_RING_COUNT_MAX = 4
         Config.SCORES_IN_IO = True
@@ -64,17 +66,25 @@ class PyLeagueEnv(gym.Env):
         # Implement your step logic here
         reward = 0
         logging.debug(f"action: {action}")
+        truncated = False
 
         player0 = self.game.players[0]
         player1 = self.game.players[1]
 
-        nactions = [int(value*10) for value in action]
+        nactions = action.reshape(-1,) * 10
         cmd0 = ';'.join([f'BEACON {i} {value}' for i, value in enumerate(nactions) if value > 0])
         cmd1 = ';'.join([f'BEACON {i} 1' for i in range(15)])
 
-        self.game.handle_player_commands(player0, cmd0)
-        self.game.handle_player_commands(player1, cmd1)
+        try:
+            self.game.handle_player_commands(player0, cmd0)
+        except Exception as e:
+            truncated = True
+            terminated = True
+            reward = -1000
+            extra = {'info': e}
+            return self.state, reward, terminated, truncated, extra
 
+        self.game.handle_player_commands(player1, cmd1)
         self.game.perform_game_update()
 
         info = self.game.get_global_info_for(player0)
@@ -84,14 +94,13 @@ class PyLeagueEnv(gym.Env):
         extra = {'info': info, 'frame': frame, 'summary': summary }
 
         terminated = self.game.game_end
-        truncated = False
 
         reward0 = player0.get_points()
         reward1 = player1.get_points()
-        reward = (reward0 - self.prev_reward0) - (reward1 - self.prev_reward1)
+        reward = (reward0 - self.prev_reward0) - 1
 
         self.prev_reward0 = reward0
-        self.prev_reward1 = reward1
+        # self.prev_reward1 = reward1
 
         if terminated:
             reward = 100 if reward0 > reward1 else -100
